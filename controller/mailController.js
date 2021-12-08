@@ -1,9 +1,9 @@
-const schedule = require('node-schedule');
 const nodemailer = require('nodemailer');
 require('dotenv').config();
+const { getSchedule } = require('../utils/scheduler');
 
 exports.scheduleRemindermail = (req, res) => {
-    const { receiverEmail, todo, receiverDate, time } = req.body;
+    const { receiverEmail, todo, receiverDate, time, id } = req.body;
     const reminderDateAndTime = new Date(`${receiverDate}T${time}`);
 
     const mailOptions = {
@@ -21,7 +21,10 @@ exports.scheduleRemindermail = (req, res) => {
         }
     });
 
-    schedule.scheduleJob(reminderDateAndTime, () => {
+    const jobName = id;
+    const schedule = getSchedule();
+    
+    schedule.scheduleJob(jobName, reminderDateAndTime, () => {
         transporter.sendMail(mailOptions, (error, info) => {
             if (error) {
                 console.log(error);
@@ -32,4 +35,11 @@ exports.scheduleRemindermail = (req, res) => {
     });
     
     res.send('Ok');
+}
+
+exports.cancelSchedule = (req, res) => {
+    const id = req.params.id;
+    const schedule = getSchedule();
+    schedule.cancelJob(id)
+    res.send('Ok')
 }

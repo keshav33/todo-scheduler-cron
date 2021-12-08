@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const scheduleRoutes = require('./routes/scheduleRoutes');
+const { initializeSchedule } = require('./utils/scheduler');
 
 const app = express();
 
@@ -16,5 +17,6 @@ app.use('/schedule', scheduleRoutes);
 const port = 6000;
 
 app.listen(port, () => {
+    initializeSchedule();
     console.log(`App listening at http://localhost:${port}`)
 })
